@@ -5,17 +5,19 @@ import { SubtractionGame } from './game_subtraction.js';
 import { MissingGame } from './game_missing.js';
 import { PatternGame } from './game_patterns.js';
 import { ShadowGame } from './game_shadow.js';
-import { ShapesGame } from './game_shapes.js';
+import { ColorsGame } from './game_colors.js';
+import { ShapesGame } from './game_shapes.js'; // ADDED BACK
 import { SortingGame } from './game_sorting.js';
-import { MeasureGame } from './game_measure.js'; // NEW
+import { MeasureGame } from './game_measure.js';
 
 export const GAMES = [
     CountingGame,
-    ShapesGame,
+    ColorsGame,
+    ShapesGame, // ADDED BACK
     ShadowGame,
     SortingGame,
     { ...CompareGame, requires: { game: 'counting', level: 3 } },
-    { ...MeasureGame, requires: { game: 'counting', level: 4 } }, // NEW: Unlocks after counting
+    { ...MeasureGame, requires: { game: 'counting', level: 4 } },
     { ...PatternGame, requires: { game: 'compare', level: 3 } },
     { ...AdditionGame, requires: { game: 'measure', level: 3 } },
     { ...MissingGame, requires: { game: 'addition', level: 2 } },
