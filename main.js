@@ -34,16 +34,29 @@ class MathApp {
 
     init() {
         document.addEventListener('touchstart', () => AudioEngine.init(), { once: true });
-        document.getElementById('lang-toggle').onclick = () => this.handleSettingsClick();
-        document.getElementById('home-btn').onclick = () => this.renderHome();
-        document.getElementById('album-btn').onclick = () => this.album.render(document.getElementById('game-container'));
-        document.getElementById('report-btn').onclick = () => this.handleReportClick();
+        
+        const langToggle = document.getElementById('lang-toggle');
+        if (langToggle) langToggle.onclick = () => this.handleSettingsClick();
+
+        const homeBtn = document.getElementById('home-btn');
+        if (homeBtn) homeBtn.onclick = () => this.renderHome();
+
+        const albumBtn = document.getElementById('album-btn');
+        if (albumBtn) albumBtn.onclick = () => this.album.render(document.getElementById('game-container'));
+
+        const reportBtn = document.getElementById('report-btn');
+        if (reportBtn) reportBtn.onclick = () => this.handleReportClick();
         
         this.updateStars();
         this.renderHome();
     }
 
-    updateStars() { document.getElementById('star-count').innerText = this.storage.getStars(); }
+    updateStars() { 
+        const starCount = document.getElementById('star-count');
+        if (starCount) {
+            starCount.innerText = this.storage.getStars(); 
+        }
+    }
 
     addStar() {
         const current = this.storage.getStars() + 1;
@@ -103,36 +116,47 @@ class MathApp {
             </div>
         `;
         document.body.appendChild(modal);
-        document.getElementById('gate-submit').onclick = () => {
-            if(document.getElementById('gate-input').value == '27') {
-                this.parentGatePassed = true;
-                modal.remove();
-                if(callback) callback();
-            }
-        };
+        
+        const gateSubmit = document.getElementById('gate-submit');
+        if (gateSubmit) {
+            gateSubmit.onclick = () => {
+                const gateInput = document.getElementById('gate-input');
+                if(gateInput && gateInput.value == '27') {
+                    this.parentGatePassed = true;
+                    modal.remove();
+                    if(callback) callback();
+                }
+            };
+        }
     }
 
     renderHome() {
         const c = document.getElementById('game-container');
+        if (!c) return;
         c.style.backgroundImage = ''; 
         
+        // Render games dynamically with safety fallbacks for values
+        const gamesHTML = (GAMES && Array.isArray(GAMES)) ? GAMES.map(game => {
+            if (!game) return '';
+            const locked = game.requires && this.storage.getLevel(game.requires.game) < game.requires.level;
+            const isNew = !locked && this.storage.getLevel(game.id) === 1; 
+            const titleText = (game.title && game.title[this.i18n.lang]) ? game.title[this.i18n.lang] : (game.id || 'Math Game');
+            return `
+                <div class="menu-card ${locked ? 'locked' : ''}" data-id="${game.id || ''}">
+                    ${isNew ? '<div class="new-badge">NEW</div>' : ''}
+                    <div class="card-icon">${game.icon || '🎮'}</div>
+                    <div class="card-text">${titleText}</div>
+                </div>
+            `;
+        }).join('') : '';
+
         c.innerHTML = `
-            ${getPetHTML(this)}
+            ${getPetHTML ? getPetHTML(this) : ''}
             <h1 class="app-title" style="font-size: 2.5rem; text-shadow: 2px 2px 0px white; margin-bottom: 1rem;">${this.i18n.t('appTitle')}</h1>
             
             <h3 class="section-header">🎮 ${this.i18n.t('games')}</h3>
             <div class="menu-grid">
-                ${GAMES.map(game => {
-                    const locked = game.requires && this.storage.getLevel(game.requires.game) < game.requires.level;
-                    const isNew = !locked && this.storage.getLevel(game.id) === 1; 
-                    return `
-                        <div class="menu-card ${locked ? 'locked' : ''}" data-id="${game.id}">
-                            ${isNew ? '<div class="new-badge">NEW</div>' : ''}
-                            <div class="card-icon">${game.icon}</div>
-                            <div class="card-text">${game.title[this.i18n.lang]}</div>
-                        </div>
-                    `;
-                }).join('')}
+                ${gamesHTML}
             </div>
             
             <h3 class="section-header">✨ ${this.i18n.t('activities')}</h3>
@@ -172,38 +196,56 @@ class MathApp {
             </div>
         `;
 
-        // Pet Logic
-        document.getElementById('feed-pet').onclick = () => {
-            if(this.storage.getStars() >= 5) {
-                this.storage.setStars(this.storage.getStars() - 5);
-                this.updateStars();
-                Storage.feedPet();
-                AudioEngine.playSfx('success');
-                AudioEngine.speak(this.i18n.t('yum'), this.i18n.lang);
-                this.renderHome();
-            } else {
-                AudioEngine.playSfx('fail');
-                AudioEngine.speak(this.i18n.t('needStars'), this.i18n.lang);
-            }
-        };
+        // Safe Pet Logic Event Target Binding
+        const feedPetBtn = document.getElementById('feed-pet');
+        if (feedPetBtn) {
+            feedPetBtn.onclick = () => {
+                if(this.storage.getStars() >= 5) {
+                    this.storage.setStars(this.storage.getStars() - 5);
+                    this.updateStars();
+                    Storage.feedPet();
+                    AudioEngine.playSfx('success');
+                    AudioEngine.speak(this.i18n.t('yum'), this.i18n.lang);
+                    this.renderHome();
+                } else {
+                    AudioEngine.playSfx('fail');
+                    AudioEngine.speak(this.i18n.t('needStars'), this.i18n.lang);
+                }
+            };
+        }
 
-        // Game Clicks
+        // Safe Game Grid Interactivity Click Handling
         c.querySelectorAll('.menu-card:not(.locked):not(.special):not(.quiz)').forEach(card => {
             card.onclick = () => {
-                const gameConfig = GAMES.find(g => g.id === card.dataset.id);
-                AudioEngine.playSfx('pop');
-                this.engine.start(gameConfig);
+                const gameConfig = GAMES.find(g => g && g.id === card.dataset.id);
+                if (gameConfig) {
+                    AudioEngine.playSfx('pop');
+                    this.engine.start(gameConfig);
+                }
             };
         });
 
-        // Special Feature Clicks
-        document.getElementById('coloring-card').onclick = () => { AudioEngine.playSfx('pop'); this.coloring.start(c); };
-        document.getElementById('tracing-card').onclick = () => { AudioEngine.playSfx('pop'); this.tracing.start(c); };
-        document.getElementById('memory-card').onclick = () => { AudioEngine.playSfx('pop'); this.memory.start(c); };
-        document.getElementById('daily-card').onclick = () => { AudioEngine.playSfx('pop'); this.daily.start(c); };
-        document.getElementById('story-card').onclick = () => { AudioEngine.playSfx('pop'); this.story.start(c); };
-        document.getElementById('badges-card').onclick = () => { AudioEngine.playSfx('pop'); this.badges.render(c); };
-        document.getElementById('quiz-card').onclick = () => { AudioEngine.playSfx('pop'); this.quiz.start(c); };
+        // Safe Special Features Event Interactivity Bindings
+        const coloringCard = document.getElementById('coloring-card');
+        if (coloringCard) coloringCard.onclick = () => { AudioEngine.playSfx('pop'); this.coloring.start(c); };
+
+        const tracingCard = document.getElementById('tracing-card');
+        if (tracingCard) tracingCard.onclick = () => { AudioEngine.playSfx('pop'); this.tracing.start(c); };
+
+        const memoryCard = document.getElementById('memory-card');
+        if (memoryCard) memoryCard.onclick = () => { AudioEngine.playSfx('pop'); this.memory.start(c); };
+
+        const dailyCard = document.getElementById('daily-card');
+        if (dailyCard) dailyCard.onclick = () => { AudioEngine.playSfx('pop'); this.daily.start(c); };
+
+        const storyCard = document.getElementById('story-card');
+        if (storyCard) storyCard.onclick = () => { AudioEngine.playSfx('pop'); this.story.start(c); };
+
+        const badgesCard = document.getElementById('badges-card');
+        if (badgesCard) badgesCard.onclick = () => { AudioEngine.playSfx('pop'); this.badges.render(c); };
+
+        const quizCard = document.getElementById('quiz-card');
+        if (quizCard) quizCard.onclick = () => { AudioEngine.playSfx('pop'); this.quiz.start(c); };
     }
 }
 const app = new MathApp();
