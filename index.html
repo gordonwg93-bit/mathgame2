@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- PWA & Mobile Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FFD166">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Math Adv">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFD166'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='%232B2D42'>🔢</text></svg>">
+    
+    <title>数学大冒险</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="star-box">⭐ <span id="star-count">0</span></div>
+            <button id="lang-toggle" class="icon-btn">🌐</button>
+        </header>
+        <main id="game-container"></main>
+        <footer>
+             <button id="home-btn" class="icon-btn">🏠</button>
+             <button id="report-btn" class="icon-btn">📊</button>
+             <button id="album-btn" class="icon-btn">🎁</button>
+        </footer>
+    </div>
+    
+    <script type="module" src="main.js"></script>
+    
+    <!-- Register Service Worker for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered!'))
+                    .catch(err => console.log('SW failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

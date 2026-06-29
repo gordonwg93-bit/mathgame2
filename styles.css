@@ -1,0 +1,233 @@
+/* =========================================
+   VARIABLES & RESETS
+   ========================================= */
+:root {
+    --primary: #FFD166; 
+    --secondary: #06D6A0; 
+    --accent: #EF476F;
+    --bg: #F7F9FC; 
+    --text: #2B2D42;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+body { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
+#app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* =========================================
+   HEADER & FOOTER
+   ========================================= */
+header, footer { padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+.star-box { font-size: 1.5rem; font-weight: bold; background: white; padding: 0.5rem 1rem; border-radius: 20px; box-shadow: 0 4px 0 #ddd; }
+.icon-btn { background: white; border: 3px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; font-size: 1.5rem; box-shadow: 0 4px 0 #ddd; cursor: pointer; }
+.icon-btn:active { transform: translateY(4px); box-shadow: none; }
+
+/* =========================================
+   MAIN CONTAINER & MENU
+   ========================================= */
+#game-container { 
+    flex: 1; 
+    padding: 1rem; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    overflow-y: auto; /* Allows scrolling for long menus */
+    padding-bottom: 2rem;
+    background-size: cover; 
+    background-position: center; 
+    transition: background-image 1s ease-in-out; 
+}
+
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; max-width: 500px; }
+.menu-card {
+    background: var(--secondary); color: white; border-radius: 25px; padding: 2rem; text-align: center;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.1); animation: bounce 2s infinite alternate; position: relative; cursor: pointer;
+}
+.menu-card:nth-child(even) { background: var(--accent); animation-delay: 1s; }
+.menu-card.locked { background: #ccc; filter: grayscale(1); opacity: 0.7; animation: none; cursor: not-allowed; }
+.new-badge { position: absolute; top: -10px; right: -10px; background: #ff0000; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+.card-icon { font-size: 4rem; margin-bottom: 0.5rem; }
+.card-text { font-size: 1.5rem; font-weight: bold; }
+
+/* Special Menu Cards */
+.menu-card.special { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); grid-column: span 1; }
+.menu-card.special.daily { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.menu-card.special.story { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.menu-card.special.memory { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.menu-card.special.tracing { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+.menu-card.special.badges { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: var(--text); }
+.menu-card.quiz { background: linear-gradient(135deg, #FFD700, #FFA500); grid-column: span 2; }
+
+/* Section Headers for Menu */
+.section-header { font-size: 1.8rem; color: var(--accent); margin: 1.5rem 0 1rem; text-shadow: 2px 2px 0px white; width: 100%; max-width: 500px; text-align: left; }
+
+/* =========================================
+   GAME SCREEN ELEMENTS
+   ========================================= */
+.game-screen { width: 100%; text-align: center; max-width: 600px; margin: auto 0; }
+.instruction { font-size: 2rem; color: var(--accent); margin-bottom: 1rem; font-weight: bold; text-shadow: 2px 2px 0px white; }
+.visual-area { font-size: 4rem; line-height: 1.2; margin: 1rem 0; min-height: 150px; display: flex; align-items: center; justify-content: center; }
+.emoji-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.pattern-seq { display: flex; gap: 0.5rem; font-size: 3rem; }
+.compare-container { display: flex; width: 100%; align-items: center; justify-content: center; gap: 1rem; }
+.compare-side { flex: 1; background: white; border-radius: 20px; padding: 1rem; font-size: 2.5rem; box-shadow: 0 4px 0 #ddd; display: flex; flex-wrap: wrap; justify-content: center; }
+.vs { font-size: 2rem; font-weight: bold; color: var(--accent); }
+.options-area { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.option-btn {
+    background: white; border: 4px solid var(--primary); border-radius: 20px; width: 80px; height: 80px; 
+    font-size: 3rem; font-weight: bold; box-shadow: 0 6px 0 #ddd; cursor: pointer; font-family: inherit;
+}
+.option-btn:active { transform: translateY(6px); box-shadow: none; }
+
+/* =========================================
+   VIRTUAL PET
+   ========================================= */
+.pet-container { background: white; border-radius: 25px; padding: 1rem; margin-bottom: 1.5rem; box-shadow: 0 6px 0 #ddd; text-align: center; width: 100%; max-width: 300px; border: 4px solid var(--primary); }
+.pet-visual { font-size: 4rem; margin-bottom: 0.5rem; animation: bounce 2s infinite alternate; }
+.pet-stats { display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem; }
+.stat-bar { width: 100px; height: 15px; background: #eee; border-radius: 10px; overflow: hidden; }
+.stat-fill { height: 100%; background: var(--secondary); transition: width 0.5s; }
+.feed-btn { background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 15px; font-size: 1rem; font-weight: bold; box-shadow: 0 4px 0 #c03050; cursor: pointer; font-family: inherit; }
+.feed-btn:active { transform: translateY(4px); box-shadow: none; }
+
+/* =========================================
+   SORTING GAME
+   ========================================= */
+.sort-bin { font-size: 2rem; background: white; padding: 1rem; border-radius: 15px; border: 3px dashed var(--primary); width: 100px; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* =========================================
+   ALBUM & MODALS
+   ========================================= */
+.album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem; width: 100%; padding: 2rem; }
+.album-grid img { width: 100%; border-radius: 15px; border: 3px solid var(--primary); }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal-box { background: white; padding: 2rem; border-radius: 20px; text-align: center; max-width: 300px; }
+.modal-box input { font-size: 2rem; text-align: center; width: 100px; padding: 0.5rem; border: 2px solid var(--primary); border-radius: 10px; }
+
+/* =========================================
+   QUIZ & PARENT REPORT
+   ========================================= */
+.quiz-progress { font-size: 1.5rem; font-weight: bold; color: white; background: var(--accent); padding: 0.5rem 1.5rem; border-radius: 20px; margin-bottom: 1rem; }
+.daily-progress { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.report-screen { max-width: 800px; width: 100%; text-align: left; padding: 1rem; margin: auto 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.stat-box { background: white; padding: 1.5rem; border-radius: 20px; text-align: center; box-shadow: 0 4px 0 #ddd; }
+.stat-num { font-size: 2.5rem; font-weight: bold; color: var(--accent); }
+.stat-label { font-size: 1rem; color: #666; }
+.section-title { font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+.mistakes-list { display: flex; flex-direction: column; gap: 1rem; max-height: 40vh; overflow-y: auto; padding-right: 10px; }
+.mistake-card { background: white; padding: 1rem; border-radius: 15px; border-left: 5px solid var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.mistake-game { font-size: 0.9rem; color: #888; font-weight: bold; text-transform: uppercase; }
+.mistake-q { font-size: 1.2rem; margin: 0.5rem 0; }
+.mistake-visual { font-size: 2rem; margin: 0.5rem 0; }
+.mistake-ans { font-size: 1.1rem; color: var(--secondary); }
+.no-mistakes { text-align: center; font-size: 1.5rem; color: var(--secondary); padding: 2rem; }
+.clear-btn { background: #ff4d4d; color: white; border: none; padding: 1rem 2rem; border-radius: 15px; font-size: 1.2rem; margin-top: 2rem; box-shadow: 0 4px 0 #cc0000; display: block; width: 100%; cursor: pointer; font-family: inherit; }
+.clear-btn:active { transform: translateY(4px); box-shadow: none; }
+.chart-container { background: white; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 4px 0 #ddd; }
+.chart-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.chart-label { width: 80px; font-weight: bold; font-size: 0.9rem; text-align: right; }
+.chart-bar-bg { flex: 1; height: 25px; background: #eee; border-radius: 15px; overflow: hidden; }
+.chart-bar-fill { height: 100%; transition: width 1s ease-out; border-radius: 15px; }
+.chart-val { width: 40px; font-weight: bold; }
+
+/* =========================================
+   COLORING BOOK
+   ========================================= */
+.coloring-screen { width: 100%; max-width: 500px; text-align: center; margin: auto 0; }
+.canvas-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; background: white; border-radius: 20px; box-shadow: 0 8px 0 #ddd; overflow: hidden; border: 4px solid var(--primary); }
+#color-canvas { width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.color-palette { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+.color-swatch { width: 50px; height: 50px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 0 #ccc; cursor: pointer; transition: transform 0.1s; }
+.color-swatch:active { transform: scale(0.9); }
+.canvas-actions { display: flex; justify-content: center; gap: 2rem; }
+.action-btn { padding: 1rem 2rem; border-radius: 20px; font-size: 1.5rem; border: none; box-shadow: 0 6px 0 #ddd; cursor: pointer; font-family: inherit; }
+.action-btn.clear { background: #ff4d4d; color: white; }
+.action-btn.done { background: var(--secondary); color: white; }
+.action-btn.next { background: var(--primary); color: white; }
+.action-btn:active { transform: translateY(6px); box-shadow: none; }
+
+/* =========================================
+   BEDTIME STORY
+   ========================================= */
+.story-screen { width: 100%; max-width: 600px; text-align: center; margin: auto 0; }
+.story-box { background: white; padding: 2rem; border-radius: 25px; box-shadow: 0 8px 0 #ddd; margin: 1.5rem 0; border: 4px solid var(--primary); text-align: left; }
+.story-text { font-size: 1.5rem; line-height: 1.6; color: var(--text); }
+.play-story { background: var(--secondary); color: white; }
+.stop-story { background: var(--accent); color: white; }
+
+/* =========================================
+   MEMORY MATCH
+   ========================================= */
+.memory-screen { width: 100%; max-width: 400px; text-align: center; margin: auto 0; }
+.memory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; width: 100%; margin: 0 auto; }
+.memory-card { aspect-ratio: 1/1; perspective: 1000px; cursor: pointer; }
+.card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+.memory-card.flipped .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 3rem; box-shadow: 0 4px 0 #ddd; }
+.card-front { background: var(--primary); color: white; }
+.card-back { background: white; transform: rotateY(180deg); border: 3px solid var(--secondary); }
+.memory-card.matched .card-back { background: #e0ffe0; border-color: var(--secondary); animation: pulse 0.5s; }
+@keyframes pulse { 50% { transform: rotateY(180deg) scale(1.1); } }
+
+/* =========================================
+   NUMBER TRACING
+   ========================================= */
+.tracing-screen { width: 100%; max-width: 500px; text-align: center; margin: auto 0; }
+.tracing-wrapper { position: relative; }
+.trace-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15rem; font-weight: bold; color: rgba(0,0,0,0.05); pointer-events: none; z-index: 1; }
+#trace-canvas { position: relative; z-index: 2; }
+
+/* =========================================
+   BADGES
+   ========================================= */
+.badges-screen { width: 100%; max-width: 600px; text-align: center; margin: auto 0; }
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1.5rem; width: 100%; }
+.badge-card { background: white; padding: 1.5rem; border-radius: 20px; text-align: center; box-shadow: 0 6px 0 #ddd; transition: transform 0.2s; }
+.badge-card.locked { filter: grayscale(1); opacity: 0.5; box-shadow: 0 6px 0 #ccc; }
+.badge-card.unlocked { border: 3px solid var(--primary); }
+.badge-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+.badge-title { font-size: 1rem; font-weight: bold; color: var(--text); }
+
+/* =========================================
+   MEASUREMENT GAME
+   ========================================= */
+.measure-container { 
+    display: flex; 
+    width: 100%; 
+    align-items: flex-end; /* Aligns towers to the bottom */
+    justify-content: center; 
+    gap: 2rem; 
+    min-height: 200px;
+    margin: 1rem 0;
+}
+.measure-tower { 
+    display: flex; 
+    flex-direction: column-reverse; /* Stacks blocks from bottom up */
+    font-size: 3rem; 
+    line-height: 1; 
+    background: white; 
+    padding: 1rem; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 0 #ddd; 
+    min-width: 80px;
+    align-items: center;
+}
+.measure-train { 
+    display: flex; 
+    flex-direction: row; 
+    font-size: 2.5rem; 
+    background: white; 
+    padding: 1rem; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 0 #ddd; 
+}
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+@keyframes bounce { to { transform: translateY(-10px); } }
+.fade-in { animation: fadeIn 0.5s forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.shake { animation: shake 0.5s; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+.confetti { position: fixed; top: -50px; font-size: 2rem; animation: fall linear forwards; pointer-events: none; z-index: 200; }
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
