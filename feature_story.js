@@ -18,8 +18,10 @@ export class StoryFeature {
             return;
         }
 
-        // Pick up to 3 stickers for the story
-        const chars = todayStickers.slice(0, 3).map(s => s.prompt || 'cute animal');
+        // Pick up to 3 stickers for the story (reuse the last one if fewer were earned)
+        const picked = todayStickers.slice(0, 3).map(s => s.prompt || 'cute animal');
+        while (picked.length < 3) picked.push(picked[picked.length - 1]);
+        const chars = picked;
         
         let storyText = '';
         if(this.app.i18n.lang === 'zh-CN') {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'math-adventure-v2';
+const CACHE_NAME = 'math-adventure-v3';
 const urlsToCache = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const urlsToCache = [
   './games_registry.js',
   './game_counting.js',
   './game_addition.js',
+  './game_colors.js',
   './game_subtraction.js',
   './game_patterns.js',
   './game_compare.js',
@@ -70,3 +71,4 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(event.request)) // Offline fallback
   );
 });
+

@@ -11,6 +11,7 @@ const dict = {
         findColor: "找相同颜色！", listenShape: "听一听，点一点！",
         circle: "圆形", triangle: "三角形", square: "正方形", star: "星形",
         red: "红色", yellow: "黄色", green: "绿色", blue: "蓝色",
+        plusEqualsWhat: "{a} 加 {b} 等于多少？", minusEqualsWhat: "{a} 减 {b} 等于多少？",
         newSticker: "获得新贴纸！", quizDone: "测验完成！",
         totalStars: "总星星", questions: "答题数", accuracy: "正确率",
         weaknesses: "薄弱环节", noMistakes: "没有记录到错误，太棒了！",
@@ -36,6 +37,7 @@ const dict = {
         findColor: "Find the same color!", listenShape: "Listen and tap!",
         circle: "Circle", triangle: "Triangle", square: "Square", star: "Star",
         red: "Red", yellow: "Yellow", green: "Green", blue: "Blue",
+        plusEqualsWhat: "{a} plus {b} equals what?", minusEqualsWhat: "{a} minus {b} equals what?",
         newSticker: "New Sticker!", quizDone: "Quiz Complete!",
         totalStars: "Total Stars", questions: "Questions", accuracy: "Accuracy",
         weaknesses: "Weaknesses", noMistakes: "No mistakes recorded! Great job!",
@@ -54,5 +56,11 @@ const dict = {
 export class I18n {
     constructor() { this.lang = localStorage.getItem('mathLang') || 'zh-CN'; }
     setLang(lang) { this.lang = lang; localStorage.setItem('mathLang', lang); document.documentElement.lang = lang; }
-    t(key) { return dict[this.lang][key] || key; }
+    t(key, params) {
+        let str = dict[this.lang][key] || key;
+        if (params) {
+            for (const k in params) str = str.replace(`{${k}}`, params[k]);
+        }
+        return str;
+    }
 }

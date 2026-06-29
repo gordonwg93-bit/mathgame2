@@ -21,7 +21,7 @@ export const AdditionGame = {
             instruction: `${a} + ${b} = ?`,
             visual: `<div class="math-equation" style="font-size:2.5rem;">${emoji.repeat(a)} ➕ ${emoji.repeat(b)} 🟰 ❓</div>`,
             options: options.map(val => ({ value: val, display: val, correct: val === sum })),
-            tts: `${a} plus ${b} equals what?`
+            tts: i18n.t('plusEqualsWhat', { a, b })
         };
     }
 };

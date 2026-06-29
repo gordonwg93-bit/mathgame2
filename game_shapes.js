@@ -1,10 +1,10 @@
 export const ShapesGame = {
-    id: 'shapes', icon: '', title: { 'zh-CN': '认图形', 'en-US': 'Shapes' }, // Added icon
+    id: 'shapes', icon: '🔷', title: { 'zh-CN': '认图形', 'en-US': 'Shapes' },
     generate(level, i18n) {
         const shapes = [
             { key: 'circle', emoji: '⭕' },
             { key: 'triangle', emoji: '🔺' },
-            { key: 'square', emoji: '⬜' }, // Fixed: was empty string!
+            { key: 'square', emoji: '🟦' }, // Fixed: was white-on-white and invisible
             { key: 'star', emoji: '⭐' }
         ];
         

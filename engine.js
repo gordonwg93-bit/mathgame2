@@ -1,5 +1,5 @@
 import { AudioEngine } from './core_audio.js';
-import { getAIImage } from './core_ai.js';
+import { getAIImage, getCachedThemeBackground } from './core_ai.js';
 
 export class GameEngine {
     constructor(app) {
@@ -12,15 +12,25 @@ export class GameEngine {
     start(gameConfig) {
         this.config = gameConfig;
         this.currentLevel = this.app.storage.getLevel(gameConfig.id);
+        this.setBackground();
         this.nextRound();
+    }
+
+    setBackground() {
+        // Fetched once per game per session instead of every round, so kids
+        // don't see the background flicker/reload after every single answer.
+        const bgUrl = getCachedThemeBackground(this.config.id, () =>
+            getAIImage(`soft pastel watercolor background for kids ${this.config.id} theme, minimal, bright`, 800, 1200)
+        );
+        const img = new Image();
+        img.onload = () => { this.container.style.backgroundImage = `url(${bgUrl})`; };
+        img.onerror = () => { this.container.style.backgroundImage = ''; }; // fail gracefully, no broken-image flash
+        img.src = bgUrl;
     }
 
     nextRound() {
         const state = this.config.generate(this.currentLevel, this.app.i18n);
         this.render(state);
-        
-        const bgUrl = getAIImage(`soft pastel watercolor background for kids ${this.config.id} theme, minimal, bright`, 800, 1200);
-        this.container.style.backgroundImage = `url(${bgUrl})`;
     }
 
     render(state) {

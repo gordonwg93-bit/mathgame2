@@ -25,7 +25,7 @@ export const SubtractionGame = {
             instruction: `${a} - ${b} = ?`,
             visual: `<div style="font-size:3rem; line-height:1.5;">${visualItems}</div>`,
             options: options.map(val => ({ value: val, display: val, correct: val === diff })),
-            tts: `${a} minus ${b} equals what?`
+            tts: i18n.t('minusEqualsWhat', { a, b })
         };
     }
 };
